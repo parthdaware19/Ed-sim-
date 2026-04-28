@@ -203,3 +203,141 @@ DELAY: MOV R1, #255
 D1: DJNZ R1, D1
 RET
 END
+
+
+==========================================================================================================================================================
+
+
+
+✅ Exp 2: ARITHMETIC OP
+MOV A, #15H
+MOV B, #12H
+ADD A, B
+SUBB A, B
+MUL AB
+DIV AB
+MOV R4, A
+MOV R4, #05H
+MOV R5,#00
+INC R5
+DEC A
+
+✅ Exp 3: MOV, MOVX
+MOV DPTR, #2050H
+MOV A, #56H
+MOVX @DPTR, A
+MOVX A, @DPTR
+
+✅ Exp 4: Arithmetic Logical (RL, ARL)
+; AND
+MOV A,#0FH
+MOV R0,#03H
+ANL A,R0
+
+; OR
+MOV A,#05H
+MOV R1,#02H
+ORL A,R1
+
+; XOR
+MOV A,#05H
+MOV R2,#03H
+XRL A,R2
+
+; CLEAR
+MOV A,#55H
+CLR A
+
+; COMPLEMENT
+MOV A,#55H
+CPL A
+
+; ROTATE LEFT
+MOV A,#09H
+RL A
+
+; ROTATE RIGHT
+MOV A,#09H
+RR A
+
+; SWAP
+MOV A,#3CH
+SWAP A
+
+✅ Exp 5: Timer Delay
+MOV TMOD, #01H
+AGAIN: MOV TL0, #1AH
+MOV TH0, #0FFH
+
+SETB TR0
+WAIT: JNB TF0, WAIT
+
+CLR TR0
+
+CPL P1.5
+CLR TF0
+SJMP AGAIN
+
+✅ Exp 6: Interrupts
+1st:
+
+ORG 0000H
+LJMP MAIN
+ORG 000BH ; Timer0 ISR
+CPL P1.0
+RETI
+MAIN: MOV TMOD, #01H
+ MOV IE, #82H ; Enable Timer0 Interrupt
+ SETB TR0
+ SJMP $
+END
+
+2nd: 
+ORG 0000H
+LJMP MAIN
+ORG 0003H
+INC P1
+RETI
+MAIN: MOV IE, #81H
+ MOV TCON, #01H
+ MOV P1, #00H
+HERE: SJMP HERE
+END
+
+✅ Exp 8:
+Clockwise: 
+main:
+SETB P3.0
+CLR P3.1
+ACALL DELAY
+
+SETB P3.1
+CLR P3.0
+ACALL DELAY
+
+SJMP MAIN
+
+DELAY:
+MOV R7, #255
+D1: MOV R6, #255
+D2: DJNZ R6, D2
+DJNZ R7, D1
+
+Anticlockwise:
+MAIN:
+SETB P3.1
+CLR P3.0
+ACALL DELAY
+
+SETB P3.0
+CLR P3.1
+ACALL DELAY
+
+SJMP MAIN
+
+DELAY:
+MOV R7, #255
+D1: MOV R6, #255
+D2: DJNZ R6, D2
+DJNZ R7, D1
+RET
